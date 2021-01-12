@@ -98,24 +98,3 @@ func (i Intercept) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Ms
 
 	return plugin.NextOrFailure(state.Name(), i.Next, ctx, w, r)
 }
-
-// func a(zone, ip string) dns.RR {
-// 	r := new(dns.A)
-// 	r.Hdr = dns.RR_Header{Name: zone, Rrtype: dns.TypeA, Class: dns.ClassINET}
-// 	r.A = net.ParseIP(ip)
-// 	return r
-// }
-
-// func aaaa(zone, ip string) dns.RR {
-// 	r := new(dns.AAAA)
-// 	r.Hdr = dns.RR_Header{Name: zone, Rrtype: dns.TypeAAAA, Class: dns.ClassINET}
-// 	r.AAAA = net.ParseIP(ip)
-// 	return r
-// }
-
-// func ptr(zone, addr string) dns.RR {
-// 	r := new(dns.PTR)
-// 	r.Hdr = dns.RR_Header{Name: zone, Rrtype: dns.TypePTR, Class: dns.ClassINET}
-// 	r.Ptr = dns.Fqdn(addr)
-// 	return r
-// }
