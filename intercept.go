@@ -82,6 +82,11 @@ func (i Intercept) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Ms
 				answer.Hdr = dns.RR_Header{Name: qname, Rrtype: dns.TypePTR, Class: dns.ClassINET}
 				answer.Ptr = dns.Fqdn(policy.answer)
 				answers = append(answers, answer)
+			case dns.TypeTXT:
+				answer := new(dns.TXT)
+				answer.Hdr = dns.RR_Header{Name: qname, Rrtype: dns.TypeTXT, Class: dns.ClassINET}
+				answer.Txt = append(answer.Txt, policy.answer)
+				answers = append(answers, answer)
 			default:
 				continue
 			}

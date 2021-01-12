@@ -37,8 +37,7 @@ func TestSetup(t *testing.T) {
 		{
 			"Intercept 4",
 			`intercept {
-				IN * 127.0.0.2 net 192.168.1.0/24
-				IN * 127.0.0.2 net 192.168.0.0/16
+				IN TXT "The sender is not allowed to query this server" net 192.168.1.0/24
 			}`,
 			false,
 		},
