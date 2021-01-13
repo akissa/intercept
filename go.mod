@@ -1,6 +1,6 @@
 module git.baruwa.io/baruwa-infra/intercept
 
-go 1.15
+go 1.13
 
 require (
 	github.com/coredns/caddy v1.1.0
