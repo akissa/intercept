@@ -63,6 +63,10 @@ func parse(c *caddy.Controller) (i Intercept, err error) {
 	var qtype uint16
 	var source *net.IPNet
 	for c.Next() {
+		if c.Val() != pluginName {
+			continue
+		}
+
 		r := rule{}
 		r.zones = c.RemainingArgs()
 		if len(r.zones) == 0 {
@@ -210,7 +214,3 @@ func parse(c *caddy.Controller) (i Intercept, err error) {
 
 	return
 }
-
-// intercept {
-// 	record 3600 CLASS RR-TYPE 127.0.0.1 net 192.168.1.0/24
-// }
