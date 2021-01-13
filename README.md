@@ -6,8 +6,8 @@
 
 ## Description
 
-The intercept plugin rewrites queries and returns predefined
-responses
+The intercept plugin intercepts queries and returns predefined
+responses for specific clients
 
 ## Syntax
 
