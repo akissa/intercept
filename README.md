@@ -2,7 +2,7 @@
 
 ## Name
 
-*intercept* - New generation rewrite plugin.
+*intercept* - Query interception plugin.
 
 ## Description
 
