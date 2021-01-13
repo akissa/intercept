@@ -1,4 +1,4 @@
-module git.baruwa.io/baruwa-infra/intercept
+module github.com/akissa/intercept
 
 go 1.13
 
