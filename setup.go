@@ -2,6 +2,7 @@ package intercept
 
 import (
 	"net"
+	"strconv"
 	"strings"
 
 	"github.com/coredns/caddy"
@@ -59,6 +60,7 @@ func setup(c *caddy.Controller) (err error) {
 }
 
 func parse(c *caddy.Controller) (i Intercept, err error) {
+	var qtype uint16
 	var source *net.IPNet
 	for c.Next() {
 		r := rule{}
@@ -75,7 +77,35 @@ func parse(c *caddy.Controller) (i Intercept, err error) {
 			p := policy{}
 			p.filter = iptree.NewTree()
 
+			// RECORD LABEL
+			ttlLabel := c.Val()
+			if ttlLabel != "record" {
+				err = c.ArgErr()
+				return
+			}
+
+			// TTL
+			if !c.NextArg() {
+				err = c.ArgErr()
+				return
+			}
+			ttlVal := c.Val()
+			ttl, e := strconv.Atoi(ttlVal)
+			if e != nil {
+				err = c.Errf("ttl should be a number of second")
+				return
+			}
+			if ttl <= 0 || ttl > 65535 {
+				err = c.Errf("ttl provided is invalid")
+				return
+			}
+			p.ttl = uint32(ttl)
+
 			// CLASS
+			if !c.NextArg() {
+				err = c.ArgErr()
+				return
+			}
 			ctype, ok := dns.StringToClass[c.Val()]
 			if !ok {
 				err = c.Errf("invalid query class %s", c.Val())
@@ -102,39 +132,52 @@ func parse(c *caddy.Controller) (i Intercept, err error) {
 				p.qtypes[qtype] = struct{}{}
 			}
 
-			// ANSWER
-			if !c.NextArg() {
+			// ANSWERS
+			remainingTokens := c.RemainingArgs()
+			numTokens := len(remainingTokens)
+			if numTokens == 0 {
 				err = c.ArgErr()
 				return
 			}
-			p.answer = c.Val()
-			if p.answer == "net" || p.answer == "" {
-				err = c.Errf("invalid Answer %s", p.answer)
-				return
-			}
-			_, matchA := p.qtypes[dns.TypeA]
-			_, matchAAA := p.qtypes[dns.TypeAAAA]
-			if matchA || matchAAA {
-				ip := net.ParseIP(p.answer)
-				if ip == nil {
-					err = c.Errf("Invalid IP notation %q", p.answer)
+
+			index := 0
+			answerFound := false
+			for ; index < numTokens; index++ {
+				ans := remainingTokens[index]
+				if !answerFound && strings.ToLower(ans) == "net" {
+					err = c.Errf("invalid Answer %s", ans)
 					return
 				}
+				if answerFound && strings.ToLower(ans) == "net" {
+					break
+				}
+				_, matchA := p.qtypes[dns.TypeA]
+				_, matchAAA := p.qtypes[dns.TypeAAAA]
+				if matchA || matchAAA {
+					ip := net.ParseIP(ans)
+					if ip == nil {
+						err = c.Errf("Invalid IP notation %q", ans)
+						return
+					}
+				}
+				if _, isRR := dns.StringToType[ans]; isRR {
+					err = c.Errf("Multiple RR Types not allowed, found %q and %q", qtype, ans)
+					return
+				}
+				p.answers = append(p.answers, ans)
+				answerFound = true
 			}
+			remainingTokens = remainingTokens[index:]
 
 			hasNetPart := false
 
-			remainingTokens := c.RemainingArgs()
 			// net label and nets
 			if len(remainingTokens) > 0 {
+				// net label
 				token := strings.ToLower(remainingTokens[0])
-				if token != "net" {
-					err = c.Errf("unexpected token %q; expect 'net'", token)
-					return
-				}
-
 				remainingTokens = remainingTokens[1:]
 
+				// networks
 				if len(remainingTokens) == 0 {
 					err = c.Errf("no token specified in %q section", token)
 					return
@@ -169,5 +212,5 @@ func parse(c *caddy.Controller) (i Intercept, err error) {
 }
 
 // intercept {
-// 	CLASS RR-TYPE 127.0.0.1 net 192.168.1.0/24
+// 	record 3600 CLASS RR-TYPE 127.0.0.1 net 192.168.1.0/24
 // }

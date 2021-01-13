@@ -16,7 +16,8 @@ type rule struct {
 }
 
 type policy struct {
-	answer   string
+	answers  []string
+	ttl      uint32
 	qclasses map[uint16]struct{}
 	qtypes   map[uint16]struct{}
 	filter   *iptree.Tree
@@ -68,25 +69,53 @@ func (i Intercept) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Ms
 			//matched
 			switch qtype {
 			case dns.TypeA:
-				answer := new(dns.A)
-				answer.Hdr = dns.RR_Header{Name: qname, Rrtype: dns.TypeA, Class: dns.ClassINET}
-				answer.A = net.ParseIP(policy.answer)
-				answers = append(answers, answer)
+				for _, ans := range policy.answers {
+					answer := new(dns.A)
+					answer.Hdr = dns.RR_Header{
+						Name:   qname,
+						Rrtype: dns.TypeA,
+						Class:  dns.ClassINET,
+						Ttl:    policy.ttl,
+					}
+					answer.A = net.ParseIP(ans)
+					answers = append(answers, answer)
+				}
 			case dns.TypeAAAA:
-				answer := new(dns.AAAA)
-				answer.Hdr = dns.RR_Header{Name: qname, Rrtype: dns.TypeAAAA, Class: dns.ClassINET}
-				answer.AAAA = net.ParseIP(policy.answer)
-				answers = append(answers, answer)
+				for _, ans := range policy.answers {
+					answer := new(dns.AAAA)
+					answer.Hdr = dns.RR_Header{
+						Name:   qname,
+						Rrtype: dns.TypeAAAA,
+						Class:  dns.ClassINET,
+						Ttl:    policy.ttl,
+					}
+					answer.AAAA = net.ParseIP(ans)
+					answers = append(answers, answer)
+				}
 			case dns.TypePTR:
-				answer := new(dns.PTR)
-				answer.Hdr = dns.RR_Header{Name: qname, Rrtype: dns.TypePTR, Class: dns.ClassINET}
-				answer.Ptr = dns.Fqdn(policy.answer)
-				answers = append(answers, answer)
+				for _, ans := range policy.answers {
+					answer := new(dns.PTR)
+					answer.Hdr = dns.RR_Header{
+						Name:   qname,
+						Rrtype: dns.TypePTR,
+						Class:  dns.ClassINET,
+						Ttl:    policy.ttl,
+					}
+					answer.Ptr = dns.Fqdn(ans)
+					answers = append(answers, answer)
+				}
 			case dns.TypeTXT:
-				answer := new(dns.TXT)
-				answer.Hdr = dns.RR_Header{Name: qname, Rrtype: dns.TypeTXT, Class: dns.ClassINET}
-				answer.Txt = append(answer.Txt, policy.answer)
-				answers = append(answers, answer)
+				for _, ans := range policy.answers {
+					answer := new(dns.TXT)
+					answer.Hdr = dns.RR_Header{
+						Name:   qname,
+						Rrtype: dns.TypeTXT,
+						Class:  dns.ClassINET,
+						Ttl:    policy.ttl,
+					}
+					answer.Txt = append(answer.Txt, ans)
+					answers = append(answers, answer)
+				}
 			default:
 				continue
 			}
