@@ -37,6 +37,10 @@ func (i Intercept) Name() string {
 // ServeDNS implements the plugin.Handler interface.
 func (i Intercept) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
+	src := net.ParseIP(state.IP())
+	qname := state.Name()
+	qtype := state.QType()
+	qclass := state.QClass()
 
 	for _, rule := range i.Rules {
 		zone := plugin.Zones(rule.zones).Matches(state.Name())
@@ -44,10 +48,6 @@ func (i Intercept) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Ms
 			continue
 		}
 
-		src := net.ParseIP(state.IP())
-		qname := state.Name()
-		qtype := state.QType()
-		qclass := state.QClass()
 		answers := []dns.RR{}
 
 		for _, policy := range rule.policies {
