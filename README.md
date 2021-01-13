@@ -18,7 +18,7 @@ intercept [ZONE...] {
 ~~~
 
 - **ZONE** zones it should be authoritative for. If empty, the zones from the configuration block are used.
-- **TTL** sets the DNS TTL of the records generated
+- **TTL** sets the DNS TTL of the answers generated
 - **CLASS** the query class (usually IN or ANY).
 - **RR-TYPE** the query type (A, PTR, ... can be ANY to match all types). "*" stands for all record types.
 - **ANSWER** the answers to return, multiple answers allowed
