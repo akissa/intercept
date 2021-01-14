@@ -4,6 +4,11 @@
 
 *intercept* - Query interception plugin.
 
+[![Coverage](https://codecov.io/gh/akissa/intercept/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/gh/akissa/intercept)
+[![License](https://img.shields.io/badge/license-AGPLv3%2B-blue.svg)](https://github.com/akissa/intercept/blob/master/LICENSE)
+[![CI](https://github.com/akissa/intercept/workflows/Ci/badge.svg)](https://github.com/akissa/intercept/actions?query=workflow%3CI)
+[![Go Report Card](https://goreportcard.com/badge/github.com/akissa/intercept)](https://goreportcard.com/report/github.com/akissa/intercept)
+
 ## Description
 
 The intercept plugin intercepts queries and returns predefined
