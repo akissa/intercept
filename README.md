@@ -4,7 +4,7 @@
 
 *intercept* - Query interception plugin.
 
-[![Coverage](https://codecov.io/gh/akissa/intercept/branch/main/graphs/badge.svg?branch=main)](https://codecov.io/gh/akissa/intercept)
+[![Coverage](https://codecov.io/gh/akissa/intercept/branch/main/graph/badge.svg?token=Z4sEXtw1SR)](https://codecov.io/gh/akissa/intercept)
 [![License](https://img.shields.io/badge/license-AGPLv3%2B-blue.svg)](https://github.com/akissa/intercept/blob/master/LICENSE)
 [![CI](https://github.com/akissa/intercept/workflows/Ci/badge.svg)](https://github.com/akissa/intercept/actions?query=workflow%3ACi)
 [![Go Report Card](https://goreportcard.com/badge/github.com/akissa/intercept)](https://goreportcard.com/report/github.com/akissa/intercept)
