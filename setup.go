@@ -68,14 +68,8 @@ func parse(c *caddy.Controller) (i Intercept, err error) {
 		}
 
 		r := rule{}
-		r.zones = c.RemainingArgs()
-		if len(r.zones) == 0 {
-			r.zones = make([]string, len(c.ServerBlockKeys))
-			copy(r.zones, c.ServerBlockKeys)
-		}
-		for i := range r.zones {
-			r.zones[i] = plugin.Host(r.zones[i]).Normalize()
-		}
+		args := c.RemainingArgs()
+		r.zones = plugin.OriginsFromArgsOrServerBlock(args, c.ServerBlockKeys)
 
 		for c.NextBlock() {
 			p := policy{}
