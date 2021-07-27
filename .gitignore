@@ -2,3 +2,4 @@ bin
 vendor
 sample
 cp.out
+coverage.txt
